@@ -149,10 +149,10 @@ const ImageTracer = ({ src }) => {
                     text="x"
                     x={line.points[0]}
                     y={line.points[1]}
-                    fontSize={16}
+                    fontSize={20}
                     fontFamily="Arial"
                     fontStyle="bold"
-                    fill="red"
+                    fill="#FF0000"
                     offsetX={8}
                     offsetY={8}
                     onClick={() => handleDelete(i)}
