@@ -20,14 +20,7 @@ const PuzzlePiece = ({ children, onDragEnd }) => (
   </Group>
 );
 
-const DeleteButton = ({ hover, setHover, ...props }) => (
-  <Text
-    {...props}
-    onMouseEnter={() => setHover(true)}
-    onMouseLeave={() => setHover(false)}
-    style={{ cursor: hover ? "pointer" : "default" }}
-  />
-);
+const DeleteButton = ({ hover, setHover, ...props }) => <Text {...props} />;
 
 const ImageTracer = ({ src }) => {
   const [image] = useImage(src);
@@ -36,7 +29,6 @@ const ImageTracer = ({ src }) => {
   const [deletingIndex, setDeletingIndex] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState(null);
-  const [hover, setHover] = useState(false);
 
   const stageRef = React.useRef();
 
@@ -51,7 +43,10 @@ const ImageTracer = ({ src }) => {
     setDrawing(true);
     const stage = stageRef.current;
     const pos = stage.getPointerPosition();
-    setLines([...lines, { points: [pos.x, pos.y], ready: false, hole: false }]);
+    setLines([
+      ...lines,
+      { points: [pos.x, pos.y], ready: false, hole: false, hover: false },
+    ]);
   };
 
   const handleMouseMove = (e) => {
@@ -129,45 +124,59 @@ const ImageTracer = ({ src }) => {
             width={newDimensions.width}
             height={newDimensions.height}
           />
-          {lines.map((line, i) => (
-            <Group key={i}>
-              {line.hole && (
-                <PuzzleLine
-                  points={line.points}
-                  stroke="#1899d6"
-                  strokeWidth={2}
-                  closed
-                  fill="gray"
-                />
-              )}
-              <PuzzlePiece draggable onDragEnd={(e) => handleDragEnd(e, i)}>
-                <PuzzleLine
-                  points={line.points}
-                  stroke="#1899d6"
-                  strokeWidth={2}
-                  closed
-                  fill={line.ready ? "" : ""}
-                />
-                {line.hole && line.ready && (
-                  <DeleteButton
-                    hover={hover}
-                    setHover={setHover}
-                    text="x"
-                    x={line.points[0]}
-                    y={line.points[1]}
-                    fontSize={20}
-                    fontFamily="Arial"
-                    fontStyle="bold"
-                    fill="#FF0000"
-                    offsetX={8}
-                    offsetY={8}
-                    onClick={() => handleDelete(i)}
-                    className={deletingIndex === i ? "deleting" : ""}
+          {lines.map((line, i) => {
+            const handleMouseEnter = () => {
+              const newLines = lines.slice();
+              newLines[i].hover = true;
+              setLines(newLines);
+            };
+
+            const handleMouseLeave = () => {
+              const newLines = lines.slice();
+              newLines[i].hover = false;
+              setLines(newLines);
+            };
+            return (
+              <Group key={i}>
+                {line.hole && (
+                  <PuzzleLine
+                    points={line.points}
+                    stroke="#1899d6"
+                    strokeWidth={2}
+                    closed
+                    fill="gray"
                   />
                 )}
-              </PuzzlePiece>
-            </Group>
-          ))}
+                <PuzzlePiece draggable onDragEnd={(e) => handleDragEnd(e, i)}>
+                  <PuzzleLine
+                    points={line.points}
+                    stroke="#1899d6"
+                    strokeWidth={2}
+                    closed
+                    fill={line.ready ? "" : ""}
+                  />
+                  {line.hole && line.ready && (
+                    <DeleteButton
+                      text="x"
+                      x={line.points[0]}
+                      y={line.points[1]}
+                      fontSize={20}
+                      fontFamily="Arial"
+                      fontStyle="bold"
+                      fill="#FF0000"
+                      offsetX={8}
+                      offsetY={8}
+                      onClick={() => handleDelete(i)}
+                      onMouseEnter={handleMouseEnter}
+                      onMouseLeave={handleMouseLeave}
+                      style={{ cursor: line.hover ? "pointer" : "default" }}
+                      className={deletingIndex === i ? "deleting" : ""}
+                    />
+                  )}
+                </PuzzlePiece>
+              </Group>
+            );
+          })}
         </Layer>
       </Stage>
       <ConfirmModal
