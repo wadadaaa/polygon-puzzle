@@ -20,11 +20,14 @@ const PuzzlePiece = ({ children, onDragEnd }) => (
   </Group>
 );
 
-const DeleteButton = styled(Text)`
-  &:hover {
-    cursor: pointer;
-  }
-`;
+const DeleteButton = ({ hover, setHover, ...props }) => (
+  <Text
+    {...props}
+    onMouseEnter={() => setHover(true)}
+    onMouseLeave={() => setHover(false)}
+    style={{ cursor: hover ? "pointer" : "default" }}
+  />
+);
 
 const ImageTracer = ({ src }) => {
   const [image] = useImage(src);
@@ -33,6 +36,7 @@ const ImageTracer = ({ src }) => {
   const [deletingIndex, setDeletingIndex] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState(null);
+  const [hover, setHover] = useState(false);
 
   const stageRef = React.useRef();
 
@@ -146,6 +150,8 @@ const ImageTracer = ({ src }) => {
                 />
                 {line.hole && line.ready && (
                   <DeleteButton
+                    hover={hover}
+                    setHover={setHover}
                     text="x"
                     x={line.points[0]}
                     y={line.points[1]}
