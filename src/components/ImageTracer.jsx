@@ -1,26 +1,24 @@
-import React, { useState, useCallback } from "react";
-import { Stage, Layer, Image, Line, Group, Text } from "react-konva";
+import React, { useState } from "react";
 import useImage from "use-image";
 import styled from "styled-components";
+import { Stage, Layer, Image, Line, Group, Text } from "react-konva";
 import ConfirmModal from "./ConfirmModal";
 
-const PuzzleLine = React.memo(
-  ({ points, stroke, strokeWidth, closed, fill }) => (
-    <Line
-      points={points}
-      stroke={stroke}
-      strokeWidth={strokeWidth}
-      closed={closed}
-      fill={fill}
-    />
-  )
+const PuzzleLine = ({ points, stroke, strokeWidth, closed, fill }) => (
+  <Line
+    points={points}
+    stroke={stroke}
+    strokeWidth={strokeWidth}
+    closed={closed}
+    fill={fill}
+  />
 );
 
-const PuzzlePiece = React.memo(({ children, onDragEnd }) => (
+const PuzzlePiece = ({ children, onDragEnd }) => (
   <Group draggable onDragEnd={onDragEnd}>
     {children}
   </Group>
-));
+);
 
 const DeleteButton = styled(Text)`
   &:hover {
@@ -45,7 +43,7 @@ const ImageTracer = ({ src }) => {
     return { width: newWidth, height: newHeight };
   };
 
-  const handleMouseDown = (e) => {
+  const handleMouseDown = () => {
     setDrawing(true);
     const stage = stageRef.current;
     const pos = stage.getPointerPosition();
@@ -78,16 +76,16 @@ const ImageTracer = ({ src }) => {
     setDrawing(false);
   };
 
-  const handleDragEnd = useCallback((e, index) => {
+  const handleDragEnd = (e, index) => {
     const newLines = lines.slice();
     newLines[index].hole = true;
     setLines(newLines);
-  });
+  };
 
-  const handleDelete = useCallback((index) => {
+  const handleDelete = (index) => {
     setDeleteIndex(index);
     setModalOpen(true);
-  });
+  };
 
   const handleConfirmDelete = () => {
     const newLines = lines.slice();
@@ -132,7 +130,7 @@ const ImageTracer = ({ src }) => {
               {line.hole && (
                 <PuzzleLine
                   points={line.points}
-                  stroke="black"
+                  stroke="#1899d6"
                   strokeWidth={2}
                   closed
                   fill="gray"
@@ -141,7 +139,7 @@ const ImageTracer = ({ src }) => {
               <PuzzlePiece draggable onDragEnd={(e) => handleDragEnd(e, i)}>
                 <PuzzleLine
                   points={line.points}
-                  stroke="black"
+                  stroke="#1899d6"
                   strokeWidth={2}
                   closed
                   fill={line.ready ? "" : ""}
